@@ -3,6 +3,7 @@
 Содержит реализации Circle и Triangle с методами area и __str__,
 а также утилиту compute_area и набор юнит-тестов.
 """
+
 from abc import ABC, abstractmethod
 import math
 
@@ -10,17 +11,19 @@ class Figura(ABC):
     """
     Абстрактный класс для геометрических фигур.
     """
+
+    @property
     @abstractmethod
     def area(self) -> float:
         """
-        Вычислить и вернуть площадь фигуры.
+        Площадь фигуры.
         """
         pass
 
     @abstractmethod
     def __str__(self) -> str:
         """
-        Вернуть строковое представление фигуры с указанием площади.
+        Строковое представление фигуры.
         """
         pass
 
@@ -28,76 +31,76 @@ class Circle(Figura):
     """
     Класс для круга, задаётся радиусом.
     """
+
     def __init__(self, radius: int | float) -> None:
-        """
-        Инициализация круга.
-
-        Args:
-            radius (int | float): Радиус круга, должен быть положительным.
-
-        Raises:
-            ValueError: Если radius <= 0.
-        """
         if radius <= 0:
-            raise ValueError("Радиус не может быть меньше или равен 0")
-        self.radius = radius
+            raise ValueError("Радиус должен быть положительным.")
+        self._radius = radius 
 
+    @property
+    def radius(self) -> float:
+        return self._radius
+
+    @radius.setter
+    def radius(self, value: int | float) -> None:
+        if value <= 0:
+            raise ValueError("Радиус должен быть положительным.")
+        self._radius = value
+
+    @property
     def area(self) -> float:
         """
-        Вычислить и вернуть площадь круга: π * r².
+        Площадь круга: π * r².
         """
-        return math.pi * (self.radius ** 2)
+        return math.pi * (self._radius ** 2)
 
     def __str__(self) -> str:
-        """
-        Вернуть описание круга с площадью.
-        """
-        return f"Круг(радиус={self.radius}) → площадь={self.area()}"
+        return f"Круг(радиус={self.radius}) → площадь={self.area:.2f}"
 
 class Triangle(Figura):
     """
     Класс для треугольника по длинам трёх сторон.
     Поддерживает вычисление площади по формуле Герона и проверку прямого угла.
     """
+
     def __init__(self, a: int | float, b: int | float, c: int | float) -> None:
-        """
-        Инициализация треугольника.
-
-        Args:
-            a (int | float): Длина стороны a, должно быть > 0.
-            b (int | float): Длина стороны b, должно быть > 0.
-            c (int | float): Длина стороны c, должно быть > 0.
-
-        Raises:
-            ValueError: Если стороны <= 0 или нарушено неравенство треугольника.
-        """
         if any(side <= 0 for side in (a, b, c)):
-            raise ValueError("Стороны треугольника должны быть положительными")
+            raise ValueError("Стороны треугольника должны быть положительными.")
         if (a + b <= c) or (a + c <= b) or (b + c <= a):
-            raise ValueError("Нарушено неравенство треугольника")
-        self.a = a
-        self.b = b
-        self.c = c
+            raise ValueError("Нарушено неравенство треугольника.")
+        self._a = a
+        self._b = b
+        self._c = c
 
+    @property
+    def a(self) -> float:
+        return self._a
+
+    @property
+    def b(self) -> float:
+        return self._b
+
+    @property
+    def c(self) -> float:
+        return self._c
+
+    @property
     def area(self) -> float:
         """
-        Вычислить и вернуть площадь по формуле Герона.
+        Площадь треугольника по формуле Герона.
         """
-        s = (self.a + self.b + self.c) / 2
-        return math.sqrt(s * (s - self.a) * (s - self.b) * (s - self.c))
+        s = (self._a + self._b + self._c) / 2
+        return math.sqrt(s * (s - self._a) * (s - self._b) * (s - self._c))
 
     def is_right(self) -> bool:
         """
         Проверить, является ли треугольник прямоугольным.
         """
-        sides = sorted((self.a, self.b, self.c))
+        sides = sorted((self._a, self._b, self._c))
         return math.isclose(sides[0]**2 + sides[1]**2, sides[2]**2)
 
     def __str__(self) -> str:
-        """
-        Вернуть описание треугольника с площадью.
-        """
-        return f"Треугольник(стороны={self.a}, {self.b}, {self.c}) → площадь={self.area()}"
+        return f"Треугольник(стороны={self.a}, {self.b}, {self.c}) → площадь={self.area:.2f}"
 
 def compute_area(shape: Figura) -> float:
     """
@@ -109,7 +112,7 @@ def compute_area(shape: Figura) -> float:
     Returns:
         float: Площадь фигуры.
     """
-    return shape.area()
+    return shape.area
 
 
 if __name__ == "__main__":
@@ -118,11 +121,11 @@ if __name__ == "__main__":
     class TestShapes(unittest.TestCase):
         def test_circle_area(self):
             c = Circle(1)
-            self.assertAlmostEqual(c.area(), math.pi)
+            self.assertAlmostEqual(c.area, math.pi)
 
         def test_triangle_area(self):
             t = Triangle(3, 4, 5)
-            self.assertAlmostEqual(t.area(), 6.0)
+            self.assertAlmostEqual(t.area, 6.0)
 
         def test_triangle_right(self):
             t = Triangle(3, 4, 5)
